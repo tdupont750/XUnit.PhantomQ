@@ -9,3 +9,8 @@ test('Postfix PlusPlus', function () {
     equal(++x, 2);
     equal(x, 2);
 });
+
+test('Failure', function () {
+    var x = 1;
+    x.timesTen();
+});

@@ -23,12 +23,12 @@ namespace XUnit.PhantomQ
         {
             var arguments = GetArguments();
             var json = GetProcessOutput(arguments);
-            var results = JsonConvert.DeserializeObject<Dictionary<string, bool>>(json);
+            var results = JsonConvert.DeserializeObject<Dictionary<string, Result>>(json);
 
             return results
                 .Select(p => new object[]
                 {
-                    new QUnitTest(p.Key, p.Value)
+                    new QUnitTest(p.Key, p.Value.Success, p.Value.Message)
                 })
                 .ToArray();
         }
@@ -75,6 +75,12 @@ namespace XUnit.PhantomQ
                 Trace.WriteLine(error);
 
             return output.Trim();
+        }
+
+        private class Result
+        {
+            public bool Success { get; set; }
+            public string Message { get; set; }
         }
     }
 }
