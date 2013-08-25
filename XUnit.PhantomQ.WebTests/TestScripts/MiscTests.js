@@ -19,3 +19,13 @@ test('Null-Coalescing Operator IsNull', function () {
     var actual = x || 2;
     equal(actual, 2);
 });
+
+test('Failure One', function () {
+    var x = 1;
+    x.plusOne();
+});
+
+test('Failure Two', function () {
+    var x = 2;
+    x.plusTwo();
+});
