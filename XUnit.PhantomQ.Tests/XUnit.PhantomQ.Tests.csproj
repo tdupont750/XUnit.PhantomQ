@@ -63,8 +63,7 @@
     <Content Include="TestScripts\ReturnFiveTests.js" />
     <Content Include="xunit.phantomq.html" />
     <Content Include="XUnit.PhantomQ\qunit.js" />
-    <Content Include="XUnit.PhantomQ\xunit.phantomq.client.js" />
-    <Content Include="XUnit.PhantomQ\xunit.phantomq.server.js" />
+    <Content Include="XUnit.PhantomQ\xunit.phantomq.js" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

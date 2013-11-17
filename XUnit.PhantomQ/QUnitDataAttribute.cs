@@ -10,11 +10,18 @@ namespace XUnit.PhantomQ
 {
     public class QUnitDataAttribute : DataAttribute
     {
+        private readonly int _timeoutMilliseconds;
         private readonly string _testFile;
         private readonly string[] _dependencies;
 
         public QUnitDataAttribute(string testFile, params string[] dependencies)
+            : this(5000, testFile, dependencies)
         {
+        }
+
+        public QUnitDataAttribute(int timeoutMilliseconds, string testFile, params string[] dependencies)
+        {
+            _timeoutMilliseconds = timeoutMilliseconds;
             _testFile = testFile;
             _dependencies = dependencies;
         }
@@ -23,22 +30,38 @@ namespace XUnit.PhantomQ
         {
             var arguments = GetArguments();
             var json = GetProcessOutput(arguments);
-            var results = JsonConvert.DeserializeObject<Dictionary<string, Result>>(json);
 
-            return results
-                .Select(p => new object[]
-                {
-                    new QUnitTest(p.Key, p.Value.Success, p.Value.Message)
-                })
+            ResultData results;
+
+            try
+            {
+                results = JsonConvert.DeserializeObject<ResultData>(json);
+            }
+            catch
+            {
+                throw new Exception(json);    
+            }
+
+            var context = new QUnitResultContext(
+                results.QUnitResult.Total,
+                results.QUnitResult.Passed,
+                results.QUnitResult.Failed,
+                results.QUnitResult.Runtime,
+                results.Logs);
+
+            return results.TestResults
+                .Select(p => new object[] {new QUnitTest(p.Key, p.Value.Success, p.Value.Message, context)})
                 .ToArray();
         }
 
         private string GetArguments()
         {
+            var timeout = _timeoutMilliseconds.ToString();
             var argumentsList = new List<string>
             {
-                @"xunit.phantomq\xunit.phantomq.server.js",
+                @"xunit.phantomq\xunit.phantomq.js",
                 "xunit.phantomq.html",
+                timeout,
                 _testFile
             };
 
@@ -77,7 +100,22 @@ namespace XUnit.PhantomQ
             return output.Trim();
         }
 
-        private class Result
+        private class ResultData
+        {
+            public QUnitResult QUnitResult { get; set; }
+            public IDictionary<string, TestResult> TestResults { get; set; }
+            public IList<string> Logs { get; set; }
+        }
+
+        private class QUnitResult
+        {
+            public int Total { get; set; }
+            public int Passed { get; set; }
+            public int Failed { get; set; }
+            public int Runtime { get; set; }
+        }
+
+        private class TestResult
         {
             public bool Success { get; set; }
             public string Message { get; set; }

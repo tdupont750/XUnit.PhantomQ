@@ -29,3 +29,12 @@ test('Failure Two', function () {
     var x = 2;
     x.plusTwo();
 });
+
+test('Logging Success', function () {
+    console.log('hello world');
+    equal(true, true);
+});
+
+test('Logging Failure', function () {
+    console.log('goodnight moon');
+});

@@ -54,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QUnitDataAttribute.cs" />
     <Compile Include="QUnitDataFileHelper.cs" />
+    <Compile Include="QUnitResultContext.cs" />
     <Compile Include="QUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
