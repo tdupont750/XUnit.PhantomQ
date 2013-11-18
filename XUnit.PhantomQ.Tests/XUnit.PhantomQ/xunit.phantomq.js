@@ -28,7 +28,7 @@
     function onConsoleMessage(message) {
         logs.push(message);
     }
-    
+
     function onCallback(event, data) {
         if (event !== 'QUnit.done') {
             return;
@@ -54,14 +54,12 @@
             phantom.exit(1);
         }
         
-        var qunitMissing = page.evaluate(evalValidateQunit);
-        if (qunitMissing) {
+        var result = page.evaluate(evalStopQUnit);
+        if (!result) {
             console.error('Exception: The `QUnit` object is not present on this page.');
             phantom.exit(1);
         }
         
-        // TODO Compile TypeScript???
-
         // Init PhantomQ
         page.evaluate(evalInitPhantomQ);
 
@@ -83,6 +81,15 @@
         phantom.exit(1);
     }
 
+    function evalStopQUnit() {
+        if (QUnit === 'undefined' || !QUnit) {
+            return false;
+        }
+        QUnit.config.autostart = false;
+        QUnit.stop();
+        return true;
+    }
+
     function evalAddScript(src) {
         (function(s) {
             var script = document.createElement("script");
@@ -94,10 +101,6 @@
 
     function evalStartQUnit() {
         QUnit.start();
-    }
-
-    function evalValidateQunit() {
-        return typeof QUnit === 'undefined' || !QUnit;
     }
 
     function evalInitPhantomQ() {

@@ -1,4 +1,4 @@
-﻿(function(require, phantom) {
+﻿(function (require, phantom) {
 
     var url,
         timeout,
@@ -14,7 +14,7 @@
             console.log('ArgumentException: phantomq.js phantomq.html timeout test.js dependency.js');
             phantom.exit(1);
         }
-        
+
         url = args[1];
         timeout = parseInt(args[2], 10);
         page = require('webpage').create();
@@ -24,11 +24,11 @@
 
         page.open(url, onOpen);
     }
-    
+
     function onConsoleMessage(message) {
         logs.push(message);
     }
-    
+
     function onCallback(event, data) {
         if (event !== 'QUnit.done') {
             return;
@@ -53,14 +53,12 @@
             console.error('Exception: Unable to access network: ' + status);
             phantom.exit(1);
         }
-        
-        var qunitMissing = page.evaluate(evalValidateQunit);
-        if (qunitMissing) {
+
+        var result = page.evaluate(evalStopQUnit);
+        if (!result) {
             console.error('Exception: The `QUnit` object is not present on this page.');
             phantom.exit(1);
         }
-        
-        // TODO Compile TypeScript???
 
         // Init PhantomQ
         page.evaluate(evalInitPhantomQ);
@@ -83,8 +81,17 @@
         phantom.exit(1);
     }
 
+    function evalStopQUnit() {
+        if (QUnit === 'undefined' || !QUnit) {
+            return false;
+        }
+        QUnit.config.autostart = false;
+        QUnit.stop();
+        return true;
+    }
+
     function evalAddScript(src) {
-        (function(s) {
+        (function (s) {
             var script = document.createElement("script");
             script.type = "text/javascript";
             script.src = s;
@@ -96,10 +103,6 @@
         QUnit.start();
     }
 
-    function evalValidateQunit() {
-        return typeof QUnit === 'undefined' || !QUnit;
-    }
-
     function evalInitPhantomQ() {
         (function (q) {
 
@@ -107,7 +110,7 @@
                 currentTest = [];
 
             initPhantomQ();
-            
+
             function initPhantomQ() {
                 q.config.autostart = false;
 
@@ -150,7 +153,7 @@
                     success: success,
                     message: message
                 };
-                
+
                 currentTest.length = 0;
             }
 
@@ -162,7 +165,7 @@
                     });
                 }
             }
-            
+
         })(QUnit);
     }
 
