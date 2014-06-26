@@ -37,4 +37,5 @@ test('Logging Success', function () {
 
 test('Logging Failure', function () {
     console.log('goodnight moon');
+    equal(true, false);
 });

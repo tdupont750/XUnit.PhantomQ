@@ -1,4 +1,6 @@
-﻿test('ReturnFive Success', function() {
+﻿/// <reference path="~/Scripts/ReturnFive.js" />
+
+test('ReturnFive Success', function () {
     var actual = ReturnFive();
     equal(actual, 5);
 });
